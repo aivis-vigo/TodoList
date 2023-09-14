@@ -34,10 +34,32 @@ const toggleCheckbox = (id: number) => {
     deleteTask(result[0]);
 }
 
+const removeFromFinished = (task: Task) => {
+    const result = finishedTasks.value.filter(finished => finished.id == task.id);
+
+    result[0].isFinished = !result[0].isFinished;
+
+    tasks.value.push(result[0]);
+
+    for (let i = 0; i < finishedTasks.value.length; i++) {
+        if (finishedTasks.value[i] === task) {
+            finishedTasks.value.splice(i, 1);
+        }
+    }
+}
+
 const deleteTask = (task: Task) => {
     for (let i = 0; i < tasks.value.length; i++) {
         if (tasks.value[i] === task) {
             tasks.value.splice(i, 1);
+        }
+    }
+}
+
+const deleteFinishedTask = (task: Task) => {
+    for (let i = 0; i < finishedTasks.value.length; i++) {
+        if (finishedTasks.value[i] === task) {
+            finishedTasks.value.splice(i, 1);
         }
     }
 }
@@ -78,23 +100,27 @@ const deleteTask = (task: Task) => {
 
             <div class="flex justify-center mt-4">
                 <ul class="text-xl w-full divide-y divide-gray-200">
-                    <li v-for="task in tasks" :key="task.id" class="pb-3 sm:pb-4">
-                        <div @click="toggleCheckbox(task.id)" class="flex items-center space-x-4">
+                    <li v-for="task in tasks"
+                        :key="task.id"
+                        class="flex justify-between pb-3 sm:pb-4">
+                        <div @click="toggleCheckbox(task.id)"
+                             class="flex items-center space-x-4">
                             <div class="flex-shrink-0">
-                                <input type="checkbox" :checked="task.isFinished">
+                                <input type="checkbox"
+                                       :checked="task.isFinished">
                             </div>
                             <div class="flex-1 min-w-0">
                                 <label class="font-medium text-gray-900 truncate dark:text-white">
                                     {{ task.title }}
                                 </label>
                             </div>
-                            <form @submit.prevent="deleteTask(task)"
-                                  class="inline-flex items-center text-base font-semibold text-red-500">
-                                <button type="submit">
-                                    Delete
-                                </button>
-                            </form>
                         </div>
+                        <form @submit.prevent="deleteTask(task)"
+                              class="inline-flex items-center text-base font-semibold text-red-500">
+                            <button type="submit">
+                                Delete
+                            </button>
+                        </form>
                     </li>
                 </ul>
             </div>
@@ -102,8 +128,8 @@ const deleteTask = (task: Task) => {
             <div class="text-white">
                 <h2 class="text-2xl font-bold">Finished Tasks</h2>
                 <ul class="text-xl w-full divide-y divide-gray-200">
-                    <li v-for="task in finishedTasks" :key="task.id" class="pb-3 sm:pb-4">
-                        <div @click="toggleCheckbox(task.id)" class="flex items-center space-x-4">
+                    <li v-for="task in finishedTasks" :key="task.id" class="flex justify-between pb-3 sm:pb-4">
+                        <div @click="removeFromFinished(task)" class="flex items-center space-x-4">
                             <div class="flex-shrink-0">
                                 <input type="checkbox" :checked="task.isFinished">
                             </div>
@@ -112,13 +138,13 @@ const deleteTask = (task: Task) => {
                                     {{ task.title }}
                                 </label>
                             </div>
-                            <form @submit.prevent="deleteTask(task)"
-                                  class="inline-flex items-center text-base font-semibold text-red-500">
-                                <button type="submit">
-                                    Delete
-                                </button>
-                            </form>
                         </div>
+                        <form @submit.prevent="deleteFinishedTask(task)"
+                              class="inline-flex items-center text-base font-semibold text-red-500">
+                            <button type="submit">
+                                Delete
+                            </button>
+                        </form>
                     </li>
                 </ul>
             </div>
